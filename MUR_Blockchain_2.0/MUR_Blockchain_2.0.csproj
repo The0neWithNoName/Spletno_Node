@@ -78,6 +78,7 @@
     <Compile Include="Block.cs" />
     <Compile Include="Blockchain.cs" />
     <Compile Include="Controllers\DefaultController.cs" />
+    <Compile Include="GlobalClass.cs" />
     <Compile Include="MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>

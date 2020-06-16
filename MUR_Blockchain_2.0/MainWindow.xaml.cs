@@ -31,7 +31,7 @@ namespace MUR_Blockchain_2._0
     /// </summary>
     public partial class MainWindow : Window
     {
-        Blockchain blockchain = new Blockchain();
+        
         private static readonly HttpClient httpClient = new HttpClient();
         public MainWindow()
         {
@@ -40,7 +40,7 @@ namespace MUR_Blockchain_2._0
           
 
         }
-        string id;
+       
         string lastMessage = "";
         static readonly object _lock = new object();
         static readonly Dictionary<int, TcpClient> list_clients = new Dictionary<int, TcpClient>();
@@ -49,38 +49,28 @@ namespace MUR_Blockchain_2._0
 
       
        // private  RSAParameters privateKey;
-        private RSAParameters publicKey;
-
-        private RSAParameters privateKey;
-        private string xmlPublicKey;
+       
         private void buttonConnect_Click(object sender, RoutedEventArgs e)
         {
+            buttonConnect.IsEnabled = false;
+            APIbutton.IsEnabled = true;
 
-            
-            
             /*Broadcast on 255.255.255.255 that a server was started on textBoxPORT
              *Also start 3 clients that listen to broadcasts about new servers
             */
-           
-            sync();
+
+
 
 
 
             IPAddress local_Address;
             local_Address = IPAddress.Parse("127.0.0.1");
 
-            spendButton.IsEnabled = true;
-            requestButton.IsEnabled = true;
-            checkBalanceButton.IsEnabled = true;
-            checkRequestsButton.IsEnabled = true;
-            accAllButton.IsEnabled = true;
-            accButton.IsEnabled = true;
-            decAllButton.IsEnabled = true;
-            decButton.IsEnabled = true;
+           
 
             if (checkPorts())
             {
-                Connect();
+                
                 //Start Api
                 Thread api = new Thread(StartAPI);
 
@@ -154,11 +144,11 @@ namespace MUR_Blockchain_2._0
 
 
 
-            if (blockchain.chain.Count > 0)
+            if (GlobalClass.blockchain.chain.Count > 0)
             {
                 // blockchain.addBlock(newBlock, Int32.Parse(Difficulty.Text));
-                blockchain.chain.Add(newBlock);
-                if (!blockchain.validateChain())
+                GlobalClass.blockchain.chain.Add(newBlock);
+                if (!GlobalClass.blockchain.validateChain())
                 {
 
                     sync();
@@ -170,7 +160,7 @@ namespace MUR_Blockchain_2._0
             }
             string json = JsonConvert.SerializeObject(newBlock);
 
-            textBoxContent.Text = blockchain.ToString();
+            textBoxContent.Text = GlobalClass.blockchain.ToString();
             textBoxContent.ScrollToEnd();
             broadcast(json);
         }
@@ -385,13 +375,13 @@ namespace MUR_Blockchain_2._0
                                 if (data != lastMessage)
                                 {
                                     broadcast(data);
-                                    
-                                    blockchain.chain.Add(JsonConvert.DeserializeObject<Block>(data));
-                                    if(!blockchain.validateChain())
+
+                                    GlobalClass.blockchain.chain.Add(JsonConvert.DeserializeObject<Block>(data));
+                                    if(!GlobalClass.blockchain.validateChain())
                                     {
                                         sync();
                                     }
-                                    textBoxContent.Text = blockchain.ToString();
+                                    textBoxContent.Text = GlobalClass.blockchain.ToString();
                                     textBoxContent.ScrollToEnd();
                                     lastMessage = data;
                                 }
@@ -475,15 +465,15 @@ namespace MUR_Blockchain_2._0
                         string data = Encoding.ASCII.GetString(receivedBytes, 0, byte_count);
                         if (data != lastMessage)
                         {
-                            
-                            blockchain.chain.Add(JsonConvert.DeserializeObject<Block>(data));
 
-                            if (!blockchain.validateChain())
+                            GlobalClass.blockchain.chain.Add(JsonConvert.DeserializeObject<Block>(data));
+
+                            if (!GlobalClass.blockchain.validateChain())
                             {
                                 sync();
                             }
 
-                            textBoxContent.Text = blockchain.ToString();
+                            textBoxContent.Text = GlobalClass.blockchain.ToString();
                             textBoxContent.ScrollToEnd();
                             broadcast(data);
                             lastMessage = data;
@@ -551,10 +541,10 @@ namespace MUR_Blockchain_2._0
                 responseMessage = cleanUpResponse(responseMessage);
 
                 //  MessageBox.Show(responseMessage);
-                blockchain.chain.Clear();
-                blockchain = JsonConvert.DeserializeObject<Blockchain>(responseMessage);
+                GlobalClass.blockchain.chain.Clear();
+                GlobalClass.blockchain = JsonConvert.DeserializeObject<Blockchain>(responseMessage);
 
-                textBoxContent.Text = blockchain.ToString();
+                textBoxContent.Text = GlobalClass.blockchain.ToString();
                 textBoxContent.ScrollToEnd();
                 return;
             }
@@ -570,9 +560,9 @@ namespace MUR_Blockchain_2._0
 
             Block block = JsonConvert.DeserializeObject<Block>(responseMessage);
 
-            if (responseMessage == "{" + cleanUpResponse(JsonConvert.SerializeObject(blockchain.getLastBlock())) + "}")
+            if (responseMessage == "{" + cleanUpResponse(JsonConvert.SerializeObject(GlobalClass.blockchain.getLastBlock())) + "}")
             {
-                if (blockchain.validateChain())
+                if (GlobalClass.blockchain.validateChain())
                 {
                     MessageBox.Show("Already in Sync");
                     return;
@@ -587,13 +577,13 @@ namespace MUR_Blockchain_2._0
                 responseMessage = cleanUpResponse(responseMessage);
 
                 // MessageBox.Show("The Entire Blockchain From Server:\n" + responseMessage);
-                blockchain.chain.Clear();
-                blockchain = JsonConvert.DeserializeObject<Blockchain>(responseMessage);
+                GlobalClass.blockchain.chain.Clear();
+                GlobalClass.blockchain = JsonConvert.DeserializeObject<Blockchain>(responseMessage);
 
             }
 
 
-            textBoxContent.Text = blockchain.ToString();
+            textBoxContent.Text = GlobalClass.blockchain.ToString();
             textBoxContent.ScrollToEnd();
         }
 
@@ -628,16 +618,17 @@ namespace MUR_Blockchain_2._0
         {
 
             
-            buttonConnect.IsEnabled = false;
+           
             string username = textBoxUsername.Text;
             textBoxUsername.IsEnabled = false;
           
             username = username.Replace(" ", "+");
-            var response = await httpClient.GetAsync("https://localhost:44366/api/default?command=connect&username="+username + "&key=" + Uri.EscapeDataString(xmlPublicKey));
+             var response = await httpClient.GetAsync("https://localhost:44366/api/default?command=connect&username=" + username + "&key=" + Uri.EscapeDataString(GlobalClass.xmlPublicKey));
+           // var response = await httpClient.GetAsync("https://localhost:44366/api/default?command=connect&username=" + username + "&port=" + port + "&key=" + Uri.EscapeDataString(xmlPublicKey));
 
             //response.Wait();
 
-           
+
 
             var responseMessage =  await response.Content.ReadAsStringAsync();
             //var responseMessage = response.Result.Content.ReadAsStringAsync().Result;
@@ -649,9 +640,9 @@ namespace MUR_Blockchain_2._0
            
 
             string[] gotem = JsonConvert.DeserializeObject<string[]>(clean);
-            id = gotem[0];
+            GlobalClass.id = gotem[0];
 
-            if (id == "No")
+            if (GlobalClass.id == "No")
             {
                 MessageBox.Show("Something went wrong!");
                 textBoxUsername.IsEnabled = true;
@@ -669,7 +660,7 @@ namespace MUR_Blockchain_2._0
                 rsa.PersistKeyInCsp = false; 
                 rsa.FromXmlString(gotem[1]);
 
-                publicKey = rsa.ExportParameters(false);
+                GlobalClass.publicKey = rsa.ExportParameters(false);
                
 
                
@@ -717,7 +708,7 @@ namespace MUR_Blockchain_2._0
 
             byte[] encrypted = Encrypt(Encoding.UTF8.GetBytes(number.ToString()));
             
-            var response = await httpClient.GetAsync("https://localhost:44366/api/default?command=spend&username=" + id +"&number="+ BitConverter.ToString(encrypted));
+            var response = await httpClient.GetAsync("https://localhost:44366/api/default?command=spend&username=" + GlobalClass.id + "&number="+ BitConverter.ToString(encrypted));
 
             var responseMessage = await response.Content.ReadAsStringAsync();
 
@@ -737,8 +728,8 @@ namespace MUR_Blockchain_2._0
             using (var rsa = new RSACryptoServiceProvider(2048))
             {
                 rsa.PersistKeyInCsp = false;
-                privateKey = rsa.ExportParameters(true);
-                xmlPublicKey = rsa.ToXmlString(false);
+                GlobalClass.privateKey = rsa.ExportParameters(true);
+                GlobalClass.xmlPublicKey = rsa.ToXmlString(false);
             }
         }
 
@@ -748,7 +739,7 @@ namespace MUR_Blockchain_2._0
             using (var rsa = new RSACryptoServiceProvider(2048))
             {
                 rsa.PersistKeyInCsp = false;
-                rsa.ImportParameters(publicKey);
+                rsa.ImportParameters(GlobalClass.publicKey);
                 encrypted = rsa.Encrypt(input, true);
             }
 
@@ -774,7 +765,7 @@ namespace MUR_Blockchain_2._0
             using (var rsa = new RSACryptoServiceProvider(2048))
             {
                 rsa.PersistKeyInCsp = false;
-                rsa.ImportParameters(privateKey);
+                rsa.ImportParameters(GlobalClass.privateKey);
                 signature = rsa.SignData(input, CryptoConfig.MapNameToOID("SHA512"));
 
             }
@@ -821,7 +812,7 @@ namespace MUR_Blockchain_2._0
 
         private async void Button_Check_Balance(object sender, RoutedEventArgs e)
         {
-            var response = await httpClient.GetAsync("https://localhost:44366/api/default?command=check_gold&username=" + id);
+            var response = await httpClient.GetAsync("https://localhost:44366/api/default?command=check_gold&username=" + GlobalClass.id);
 
             var responseMessage = await response.Content.ReadAsStringAsync();
 
@@ -848,7 +839,7 @@ namespace MUR_Blockchain_2._0
                 data = BitConverter.ToString(Encrypt(Encoding.UTF8.GetBytes(data)));
 
 
-                var response = await httpClient.GetAsync("https://localhost:44366/api/default?command=req_gold&username=" + id + "&data="  + data + "&signature=" + Uri.EscapeDataString(signature));
+                var response = await httpClient.GetAsync("https://localhost:44366/api/default?command=req_gold&username=" + GlobalClass.id + "&data="  + data + "&signature=" + Uri.EscapeDataString(signature));
                
               
                 var responseMessage = await response.Content.ReadAsStringAsync();
@@ -878,7 +869,7 @@ namespace MUR_Blockchain_2._0
 
                 data = BitConverter.ToString(Encrypt(Encoding.UTF8.GetBytes(data)));
 
-                var response = await httpClient.GetAsync("https://localhost:44366/api/default?command=send_gold&username=" + id + "&data=" + data + "&signature=" + Uri.EscapeDataString(signature));
+                var response = await httpClient.GetAsync("https://localhost:44366/api/default?command=send_gold&username=" + GlobalClass.id + "&data=" + data + "&signature=" + Uri.EscapeDataString(signature));
 
                 var responseMessage = await response.Content.ReadAsStringAsync();
 
@@ -891,7 +882,7 @@ namespace MUR_Blockchain_2._0
 
         private async void Button_Check_Trans(object sender, RoutedEventArgs e)
         {
-            var response = await httpClient.GetAsync("https://localhost:44366/api/default?command=check_trans&username=" + id );
+            var response = await httpClient.GetAsync("https://localhost:44366/api/default?command=check_trans&username=" + GlobalClass.id);
 
             var responseMessage = await response.Content.ReadAsStringAsync();
 
@@ -902,7 +893,7 @@ namespace MUR_Blockchain_2._0
 
         private async void Button_Accept_All(object sender, RoutedEventArgs e)
         {
-            var response = await httpClient.GetAsync("https://localhost:44366/api/block?command=acc_all&username=" + id);
+            var response = await httpClient.GetAsync("https://localhost:44366/api/block?command=acc_all&username=" + GlobalClass.id);
 
 
             var responseMessage = await response.Content.ReadAsStringAsync();
@@ -913,14 +904,14 @@ namespace MUR_Blockchain_2._0
             else
             {
                 sync();
-                string json = JsonConvert.SerializeObject(blockchain.getLastBlock());
+                string json = JsonConvert.SerializeObject(GlobalClass.blockchain.getLastBlock());
                 broadcast(json);
             }
         }
 
         private async void Button_Decline_All(object sender, RoutedEventArgs e)
         {
-            var response = await httpClient.GetAsync("https://localhost:44366/api/block?command=dec_all&username=" + id);
+            var response = await httpClient.GetAsync("https://localhost:44366/api/block?command=dec_all&username=" + GlobalClass.id);
 
 
             var responseMessage = await response.Content.ReadAsStringAsync();
@@ -930,7 +921,7 @@ namespace MUR_Blockchain_2._0
             else
             {
                 sync();
-                string json = JsonConvert.SerializeObject(blockchain.getLastBlock());
+                string json = JsonConvert.SerializeObject(GlobalClass.blockchain.getLastBlock());
                 broadcast(json);
             }
         }
@@ -941,7 +932,7 @@ namespace MUR_Blockchain_2._0
             {
                 string number = textTransID.Text;
                 number = BitConverter.ToString(Encrypt(Encoding.UTF8.GetBytes(number)));
-                var response = await httpClient.GetAsync("https://localhost:44366/api/block?command=acc&username=" + id + "&number=" + number);
+                var response = await httpClient.GetAsync("https://localhost:44366/api/block?command=acc&username=" + GlobalClass.id + "&number=" + number);
                 var responseMessage = await response.Content.ReadAsStringAsync();
                 //MessageBox.Show(responseMessage);
 
@@ -963,9 +954,9 @@ namespace MUR_Blockchain_2._0
 
                 Block newBlock = JsonConvert.DeserializeObject<Block>(cleanUpResponse(responseMessage));
 
-                blockchain.chain.Add(newBlock);
+                GlobalClass.blockchain.chain.Add(newBlock);
 
-                if (!blockchain.validateChain())
+                if (!GlobalClass.blockchain.validateChain())
                 {
                     sync();
                 }
@@ -973,7 +964,7 @@ namespace MUR_Blockchain_2._0
 
                 string json = JsonConvert.SerializeObject(newBlock);
 
-                textBoxContent.Text = blockchain.ToString();
+                textBoxContent.Text = GlobalClass.blockchain.ToString();
                 textBoxContent.ScrollToEnd();
                 broadcast(json);
             }
@@ -989,7 +980,7 @@ namespace MUR_Blockchain_2._0
 
                 string number = textTransID.Text;
                 number = BitConverter.ToString(Encrypt(Encoding.UTF8.GetBytes(number)));
-                var response = await httpClient.GetAsync("https://localhost:44366/api/block?command=dec&username=" + id + "&number=" + number);
+                var response = await httpClient.GetAsync("https://localhost:44366/api/block?command=dec&username=" + GlobalClass.id + "&number=" + number);
                 var responseMessage = await response.Content.ReadAsStringAsync();
                 //MessageBox.Show(responseMessage);
 
@@ -1001,9 +992,9 @@ namespace MUR_Blockchain_2._0
 
                 Block newBlock = JsonConvert.DeserializeObject<Block>(cleanUpResponse(responseMessage));
 
-                blockchain.chain.Add(newBlock);
+                GlobalClass.blockchain.chain.Add(newBlock);
 
-                if (!blockchain.validateChain())
+                if (!GlobalClass.blockchain.validateChain())
                 {
                     sync();
                 }
@@ -1011,7 +1002,7 @@ namespace MUR_Blockchain_2._0
 
                 string json = JsonConvert.SerializeObject(newBlock);
 
-                textBoxContent.Text = blockchain.ToString();
+                textBoxContent.Text = GlobalClass.blockchain.ToString();
                 textBoxContent.ScrollToEnd();
                 broadcast(json);
             }
@@ -1029,13 +1020,41 @@ namespace MUR_Blockchain_2._0
             using (HttpSelfHostServer server = new HttpSelfHostServer(config))
             {
                 server.OpenAsync().Wait();
-                MessageBox.Show("API RUNNING");
+                // MessageBox.Show("API RUNNING");
+               //This is a stupid solution but it works
                 while(true)
                 {
-
+                    Thread.Sleep(10000);
                 }
 
             }
+        }
+
+        private void Button_Click_1(object sender, RoutedEventArgs e)
+        {
+            Connect();
+            sync();
+            APIbutton.IsEnabled = false;
+            spendButton.IsEnabled = true;
+            requestButton.IsEnabled = true;
+            checkBalanceButton.IsEnabled = true;
+            checkRequestsButton.IsEnabled = true;
+            checkMyRequestsButton.IsEnabled = true;
+            accAllButton.IsEnabled = true;
+            accButton.IsEnabled = true;
+            decAllButton.IsEnabled = true;
+            decButton.IsEnabled = true;
+        }
+
+        private async void Button_Check_MyTrans(object sender, RoutedEventArgs e)
+        {
+            var response = await httpClient.GetAsync("https://localhost:44366/api/default?command=check_mytrans&username=" + GlobalClass.id);
+
+            var responseMessage = await response.Content.ReadAsStringAsync();
+
+
+            MessageBox.Show(responseMessage.Replace("\\n", "\n").Replace("\"", ""));
+
         }
     }
 }

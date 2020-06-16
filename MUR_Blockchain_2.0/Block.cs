@@ -9,7 +9,7 @@ using Newtonsoft.Json.Serialization;
 
 namespace MUR_Blockchain_2._0
 {
-    class Block
+    public class Block
     {
         public int index { get; set; }
         public DateTime timestamp { get; set; }

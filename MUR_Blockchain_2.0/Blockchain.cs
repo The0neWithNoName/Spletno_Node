@@ -7,7 +7,7 @@ using System.Security.Cryptography;
 
 namespace MUR_Blockchain_2._0
 {
-    class Blockchain
+   public class Blockchain
     {
         public List<Block> chain = new List<Block>();
 
