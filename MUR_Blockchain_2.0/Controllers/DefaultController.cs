@@ -99,7 +99,7 @@ namespace MUR_Blockchain_2._0
 
         public string Get(string command, string username, string number)
         {
-            if (command == "send_gold")
+            if (command == "request_gold")
             {
                 string otherUser = username;
                 string gold = number;
@@ -122,6 +122,27 @@ namespace MUR_Blockchain_2._0
 
                 return cleanUpResponse(responseMessage);
 
+            }
+            else if (command == "send_gold")
+            {
+                string otherUser = username;
+                string gold = number;
+
+                string signature = Convert.ToBase64String(Sign(Encoding.UTF8.GetBytes(otherUser + gold)));
+
+                string[] content = { otherUser, gold };
+
+
+                string data = JsonConvert.SerializeObject(content);
+
+                data = BitConverter.ToString(Encrypt(Encoding.UTF8.GetBytes(data)));
+
+                var response =  httpClient.GetAsync("https://localhost:44366/api/default?command=send_gold&username=" + GlobalClass.id + "&data=" + data + "&signature=" + Uri.EscapeDataString(signature));
+                
+                response.Wait();
+                var responseMessage = response.Result.Content.ReadAsStringAsync().Result;
+
+                return cleanUpResponse(responseMessage);
             }
             return "error";
         }
