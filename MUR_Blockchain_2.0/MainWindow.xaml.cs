@@ -1053,6 +1053,17 @@ namespace MUR_Blockchain_2._0
 
         }
 
+        private async void Button_Clear_Log(object sender, RoutedEventArgs e)
+        {
+            var response = await httpClient.GetAsync("https://localhost:44366/api/default?command=clr_log");
 
+            var responseMessage = await response.Content.ReadAsStringAsync();
+
+            if (cleanUpResponse(responseMessage) == "ok")
+                MessageBox.Show("Log cleared");
+
+            else
+                MessageBox.Show(cleanUpResponse(responseMessage));
+        }
     }
 }

@@ -13,9 +13,10 @@
         <Label Content="Difficulty:" HorizontalAlignment="Left" Margin="225,11,0,0" VerticalAlignment="Top" RenderTransformOrigin="0.241,0.623"/>
         <TextBox x:Name="Difficulty" HorizontalAlignment="Left" Height="23" Margin="294,10,0,0" TextWrapping="Wrap" Text="1" VerticalAlignment="Top" Width="120"/>
         <Button Content="Change Difficulty" HorizontalAlignment="Left" Margin="289,39,0,0" VerticalAlignment="Top" Width="120" RenderTransformOrigin="0.5,0.5" Click="Button_Change_Diff"/>
-        <Button Content="Sync" HorizontalAlignment="Left" Margin="334,113,0,0" VerticalAlignment="Top" Width="75" Click="Button_Sync"/>
+        <Button Content="Sync" HorizontalAlignment="Left" Margin="334,103,0,0" VerticalAlignment="Top" Width="75" Click="Button_Sync"/>
         <Button Content="See Connected users" HorizontalAlignment="Left" Margin="10,37,0,0" VerticalAlignment="Top" Width="122" Click="Button_Connected_Users"/>
-        <Button Content="Get Log" HorizontalAlignment="Left" Margin="334,151,0,0" VerticalAlignment="Top" Width="75" Click="Button_Get_Log"/>
+        <Button Content="Get Log" HorizontalAlignment="Left" Margin="334,128,0,0" VerticalAlignment="Top" Width="75" Click="Button_Get_Log"/>
+        <Button Content="Clear Log" HorizontalAlignment="Left" Margin="334,153,0,0" VerticalAlignment="Top" Width="75" Click="Button_Clear_Log"/>
         <Button Name="checkBalanceButton"   Content="Check Current Balance" HorizontalAlignment="Left" Margin="334,194,0,0" VerticalAlignment="Top" Width="150" Click="Button_Check_Balance" Height="30"/>
         <TextBox Name="textBoxUsername" HorizontalAlignment="Left" Height="23" Margin="569,10,0,0" TextWrapping="Wrap" Text="username" VerticalAlignment="Top" Width="120"/>
         <Button   Name="spendButton" Content="Send Gold" HorizontalAlignment="Left" Margin="607,150,0,0" VerticalAlignment="Top" Width="82" Height="33" Click="Button_Send_Gold"/>
