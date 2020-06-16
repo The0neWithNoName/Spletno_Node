@@ -21,7 +21,8 @@ using System.IO;
 using Newtonsoft.Json;
 using System.Net.Http;
 using System.Security.Cryptography;
-
+using System.Web.Http.SelfHost;
+using System.Web.Http;
 
 namespace MUR_Blockchain_2._0
 {
@@ -36,7 +37,8 @@ namespace MUR_Blockchain_2._0
         {
             InitializeComponent();
             GenerateKeys();
-            
+          
+
         }
         string id;
         string lastMessage = "";
@@ -79,10 +81,23 @@ namespace MUR_Blockchain_2._0
             if (checkPorts())
             {
                 Connect();
-               
+                //Start Api
+                Thread api = new Thread(StartAPI);
+
+                try
+                {
+                    api.IsBackground = true;
+                    api.Start();
+
+                }
+                catch
+                {
+                    api.Join();
+                    MessageBox.Show("Error occured");
+                }
 
 
-                    Thread assigner = new Thread(client_assigner);
+                Thread assigner = new Thread(client_assigner);
                     try
                     {
                         assigner.IsBackground = true;
@@ -609,7 +624,7 @@ namespace MUR_Blockchain_2._0
 
         }
 
-        private async void Connect()
+        public async void Connect()
         {
 
             
@@ -620,8 +635,14 @@ namespace MUR_Blockchain_2._0
             username = username.Replace(" ", "+");
             var response = await httpClient.GetAsync("https://localhost:44366/api/default?command=connect&username="+username + "&key=" + Uri.EscapeDataString(xmlPublicKey));
 
-            var responseMessage = await response.Content.ReadAsStringAsync();
+            //response.Wait();
 
+           
+
+            var responseMessage =  await response.Content.ReadAsStringAsync();
+            //var responseMessage = response.Result.Content.ReadAsStringAsync().Result;
+
+            //MessageBox.Show(responseMessage);
 
             string clean = cleanUpResponse(responseMessage);
 
@@ -997,6 +1018,24 @@ namespace MUR_Blockchain_2._0
             else
                 MessageBox.Show("Please Enter Transaction ID");
 
+        }
+
+        private void StartAPI()
+        {
+            var config = new HttpSelfHostConfiguration("http://localhost:" + (port+1000));
+
+            config.Routes.MapHttpRoute("API Default", "api/{controller}");
+
+            using (HttpSelfHostServer server = new HttpSelfHostServer(config))
+            {
+                server.OpenAsync().Wait();
+                MessageBox.Show("API RUNNING");
+                while(true)
+                {
+
+                }
+
+            }
         }
     }
 }
