@@ -48,7 +48,7 @@ namespace MUR_Blockchain_2._0
                 response.Wait();
                 var responseMessage = response.Result.Content.ReadAsStringAsync().Result;
 
-                return responseMessage.Replace("\\n", "<br>").Replace("\"", "");
+                return responseMessage.Replace("\\n", "\n").Replace("\"", "");
             }
             else if (command == "check_my_trans")
             {
@@ -58,7 +58,7 @@ namespace MUR_Blockchain_2._0
                 response.Wait();
                 var responseMessage = response.Result.Content.ReadAsStringAsync().Result;
 
-                return responseMessage.Replace("\\n", "<br>").Replace("\"", "");
+                return responseMessage.Replace("\\n", "\n").Replace("\"", "");
             }
             else if (command == "accept_all")
             {
