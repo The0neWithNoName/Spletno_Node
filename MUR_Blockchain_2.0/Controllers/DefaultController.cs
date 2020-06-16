@@ -22,19 +22,41 @@ namespace MUR_Blockchain_2._0
 
         public string Get(string command)
         {
-            if(command == "check_wallet")
+            if (command == "check_wallet")
             {
-                var response =  httpClient.GetAsync("https://localhost:44366/api/default?command=check_gold&username=" + GlobalClass.id);
+                var response = httpClient.GetAsync("https://localhost:44366/api/default?command=check_gold&username=" + GlobalClass.id);
 
                 response.Wait();
 
                 //var responseMessage = await response.Content.ReadAsStringAsync();
                 var responseMessage = response.Result.Content.ReadAsStringAsync().Result;
 
-                return cleanUpResponse( responseMessage);
+                return cleanUpResponse(responseMessage);
+            }
+            else if (command == "check_trans")
+            {
+                var response = httpClient.GetAsync("https://localhost:44366/api/default?command=check_trans&username=" + GlobalClass.id);
+
+
+                response.Wait();
+                var responseMessage = response.Result.Content.ReadAsStringAsync().Result;
+
+                return responseMessage.Replace("\\n", "<br>").Replace("\"", "");
+            }
+            else if (command == "check_my_trans")
+            {
+                var response = httpClient.GetAsync("https://localhost:44366/api/default?command=check_mytrans&username=" + GlobalClass.id);
+
+
+                response.Wait();
+                var responseMessage = response.Result.Content.ReadAsStringAsync().Result;
+
+                return responseMessage.Replace("\\n", "<br>").Replace("\"", "");
             }
 
-            return "error";
+
+                
+                return "error";
         }
 
         public  string Get(string command, string username)
