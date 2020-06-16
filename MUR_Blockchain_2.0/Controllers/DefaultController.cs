@@ -110,7 +110,7 @@ namespace MUR_Blockchain_2._0
                 return "error";
         }
 
-        public  string Get(string command, string data)
+        public  string Post(string command, string data)
         {
             if (command == "connect")
             {
