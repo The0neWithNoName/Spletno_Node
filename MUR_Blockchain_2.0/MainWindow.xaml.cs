@@ -907,6 +907,8 @@ namespace MUR_Blockchain_2._0
                 string json = JsonConvert.SerializeObject(GlobalClass.blockchain.getLastBlock());
                 broadcast(json);
             }
+
+
         }
 
         private async void Button_Decline_All(object sender, RoutedEventArgs e)
