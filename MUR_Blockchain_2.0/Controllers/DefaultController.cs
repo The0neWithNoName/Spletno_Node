@@ -87,7 +87,7 @@ namespace MUR_Blockchain_2._0
 
                 if (GlobalClass.id == "No")
                 {
-                    MessageBox.Show("Something went wrong!");
+                   // MessageBox.Show("Something went wrong!");
                   
 
                     return "error";
@@ -224,7 +224,7 @@ namespace MUR_Blockchain_2._0
             {
                 if (GlobalClass.blockchain.validateChain())
                 {
-                    MessageBox.Show("Already in Sync");
+                   // MessageBox.Show("Already in Sync");
                     return;
                 }
             }
