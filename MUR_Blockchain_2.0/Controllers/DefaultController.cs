@@ -71,8 +71,11 @@ namespace MUR_Blockchain_2._0
                     string json = JsonConvert.SerializeObject(GlobalClass.blockchain.getLastBlock());
                     Application.Current.Dispatcher.Invoke(() =>
                     {
-                      
-                    ((MainWindow)System.Windows.Application.Current.MainWindow).broadcast(json);
+
+                        ((MainWindow)System.Windows.Application.Current.MainWindow).textBoxContent.Text = GlobalClass.blockchain.ToString();
+                        ((MainWindow)System.Windows.Application.Current.MainWindow).textBoxContent.ScrollToEnd();
+
+                        ((MainWindow)System.Windows.Application.Current.MainWindow).broadcast(json);
                     });
                     return "accepted";
                 }
@@ -93,6 +96,10 @@ namespace MUR_Blockchain_2._0
                     string json = JsonConvert.SerializeObject(GlobalClass.blockchain.getLastBlock());
                     Application.Current.Dispatcher.Invoke(() =>
                     {
+
+                        ((MainWindow)System.Windows.Application.Current.MainWindow).textBoxContent.Text = GlobalClass.blockchain.ToString();
+                        ((MainWindow)System.Windows.Application.Current.MainWindow).textBoxContent.ScrollToEnd();
+
                         ((MainWindow)System.Windows.Application.Current.MainWindow).broadcast(json);
                     });
                 }
@@ -197,6 +204,10 @@ namespace MUR_Blockchain_2._0
 
                 Application.Current.Dispatcher.Invoke(() =>
                 {
+
+                    ((MainWindow)System.Windows.Application.Current.MainWindow).textBoxContent.Text = GlobalClass.blockchain.ToString();
+                    ((MainWindow)System.Windows.Application.Current.MainWindow).textBoxContent.ScrollToEnd();
+
                     ((MainWindow)System.Windows.Application.Current.MainWindow).broadcast(json);
                 });
 
@@ -233,6 +244,10 @@ namespace MUR_Blockchain_2._0
 
                 Application.Current.Dispatcher.Invoke(() =>
                 {
+
+                    ((MainWindow)System.Windows.Application.Current.MainWindow).textBoxContent.Text = GlobalClass.blockchain.ToString();
+                    ((MainWindow)System.Windows.Application.Current.MainWindow).textBoxContent.ScrollToEnd();
+
                     ((MainWindow)System.Windows.Application.Current.MainWindow).broadcast(json);
                 });
 
@@ -330,6 +345,14 @@ namespace MUR_Blockchain_2._0
                 GlobalClass.blockchain.chain.Clear();
                 GlobalClass.blockchain = JsonConvert.DeserializeObject<Blockchain>(responseMessage);
 
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+
+                    ((MainWindow)System.Windows.Application.Current.MainWindow).textBoxContent.Text = GlobalClass.blockchain.ToString();
+                    ((MainWindow)System.Windows.Application.Current.MainWindow).textBoxContent.ScrollToEnd();
+
+                   
+                });
 
                 return;
             }
@@ -366,6 +389,14 @@ namespace MUR_Blockchain_2._0
                 GlobalClass.blockchain = JsonConvert.DeserializeObject<Blockchain>(responseMessage);
 
             }
+            Application.Current.Dispatcher.Invoke(() =>
+            {
+
+                ((MainWindow)System.Windows.Application.Current.MainWindow).textBoxContent.Text = GlobalClass.blockchain.ToString();
+                ((MainWindow)System.Windows.Application.Current.MainWindow).textBoxContent.ScrollToEnd();
+
+               
+            });
 
         }
 
