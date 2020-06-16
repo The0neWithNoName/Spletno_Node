@@ -120,7 +120,7 @@ namespace MUR_Blockchain_2._0
               
             }
 
-            RTs223();
+         
         }
 
 
@@ -327,13 +327,7 @@ namespace MUR_Blockchain_2._0
             return true;
         }
 
-        private void RTs223()
-        {
-            if (textBoxUsername.Text == "Jew" || textBoxUsername.Text == "jew")
-            {
-                spendButton.IsEnabled = false;
-            }
-        }
+
         public void handle_clients(object o)
         {
             //initializing httpClient

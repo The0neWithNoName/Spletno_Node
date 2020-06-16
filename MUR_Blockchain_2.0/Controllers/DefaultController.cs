@@ -77,6 +77,26 @@ namespace MUR_Blockchain_2._0
                     return "accepted";
                 }
             }
+            else if (command == "decline_all")
+            {
+                var response = httpClient.GetAsync("https://localhost:44366/api/block?command=dec_all&username=" + GlobalClass.id);
+
+
+                response.Wait();
+                var responseMessage = response.Result.Content.ReadAsStringAsync().Result;
+
+                if (cleanUpResponse(responseMessage) == "No Transactions")
+                  return (cleanUpResponse(responseMessage));
+                else
+                {
+                    sync();
+                    string json = JsonConvert.SerializeObject(GlobalClass.blockchain.getLastBlock());
+                    Application.Current.Dispatcher.Invoke(() =>
+                    {
+                        ((MainWindow)System.Windows.Application.Current.MainWindow).broadcast(json);
+                    });
+                }
+            }
 
 
                 
