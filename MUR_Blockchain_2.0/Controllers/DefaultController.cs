@@ -103,14 +103,14 @@ namespace MUR_Blockchain_2._0
                 return "error";
         }
 
-        public  string Get(string command, string username)
+        public  string Get(string command, string data)
         {
-           if(command == "connect")
+            if (command == "connect")
             {
-               
 
-                
-                var response =  httpClient.GetAsync("https://localhost:44366/api/default?command=connect&username=" + username + "&key=" + Uri.EscapeDataString(GlobalClass.xmlPublicKey));
+                string username = data;
+
+                var response = httpClient.GetAsync("https://localhost:44366/api/default?command=connect&username=" + username + "&key=" + Uri.EscapeDataString(GlobalClass.xmlPublicKey));
                 // var response = await httpClient.GetAsync("https://localhost:44366/api/default?command=connect&username=" + username + "&port=" + port + "&key=" + Uri.EscapeDataString(xmlPublicKey));
 
                 response.Wait();
@@ -131,8 +131,8 @@ namespace MUR_Blockchain_2._0
 
                 if (GlobalClass.id == "No")
                 {
-                   // MessageBox.Show("Something went wrong!");
-                  
+                    // MessageBox.Show("Something went wrong!");
+
 
                     return "error";
 
@@ -157,6 +157,87 @@ namespace MUR_Blockchain_2._0
 
 
                 return "Connected";
+            }
+            else if (command == "accept_trans")
+            {
+                string number = data;
+                number = BitConverter.ToString(Encrypt(Encoding.UTF8.GetBytes(number)));
+                var response =  httpClient.GetAsync("https://localhost:44366/api/block?command=acc&username=" + GlobalClass.id + "&number=" + number);
+                response.Wait();
+                var responseMessage = response.Result.Content.ReadAsStringAsync().Result;
+
+
+                if (cleanUpResponse(responseMessage) == "no")
+                {
+                    return ("Something went wrong, check ID");
+                   
+                }
+                else if (cleanUpResponse(responseMessage) == "You")
+                {
+                    return ("You do not own enough Gold");
+                  
+                }
+                else if (cleanUpResponse(responseMessage) == "They")
+                {
+                    return ("The user does not own enought Gold");
+                   
+                }
+
+                Block newBlock = JsonConvert.DeserializeObject<Block>(cleanUpResponse(responseMessage));
+
+                GlobalClass.blockchain.chain.Add(newBlock);
+
+                if (!GlobalClass.blockchain.validateChain())
+                {
+                    sync();
+                }
+
+
+                string json = JsonConvert.SerializeObject(newBlock);
+
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    ((MainWindow)System.Windows.Application.Current.MainWindow).broadcast(json);
+                });
+
+
+                return "Transaction Accepted";
+            }
+            else if (command == "decline_trans")
+            {
+
+                string number = data;
+                number = BitConverter.ToString(Encrypt(Encoding.UTF8.GetBytes(number)));
+                var response =  httpClient.GetAsync("https://localhost:44366/api/block?command=dec&username=" + GlobalClass.id + "&number=" + number);
+                response.Wait();
+                var responseMessage = response.Result.Content.ReadAsStringAsync().Result;
+
+                if (cleanUpResponse(responseMessage) == "no")
+                {
+                    return ("Something went wrong, check ID");
+                    
+                }
+
+                Block newBlock = JsonConvert.DeserializeObject<Block>(cleanUpResponse(responseMessage));
+
+                GlobalClass.blockchain.chain.Add(newBlock);
+
+                if (!GlobalClass.blockchain.validateChain())
+                {
+                    sync();
+                }
+
+
+                string json = JsonConvert.SerializeObject(newBlock);
+
+
+                Application.Current.Dispatcher.Invoke(() =>
+                {
+                    ((MainWindow)System.Windows.Application.Current.MainWindow).broadcast(json);
+                });
+
+
+                return "Transaction Declined";
             }
            
             return "error";
