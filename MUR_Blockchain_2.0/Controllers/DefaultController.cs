@@ -110,6 +110,8 @@ namespace MUR_Blockchain_2._0
                         ((MainWindow)System.Windows.Application.Current.MainWindow).broadcast(json);
                     });
                 }
+
+                return "Declined";
             }
 
 
